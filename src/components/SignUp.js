@@ -1,20 +1,31 @@
-import React, { useState } from 'react';
-import { Link } from '@reach/router';
-import {auth, generateUserDocument} from '../firebase/config';
-import { signInWithGoogle } from '../firebase/config';
-import "./loginPages.css";
+import React, { useState, useEffect, useContext } from 'react';
+import Title from './title';
+import Search from'./search';
+import Modal from './modal';
+import { UserContext } from '../providers/userProvider';
+import { auth } from '../firebase/config';
+import '../index.css';
 import { useMediaQuery } from 'react-responsive'
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { motion } from 'framer-motion';
+import { IconButton } from '@material-ui/core';
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import Button from '@material-ui/core/Button';
 
-const SignUp = () => {
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [displayName, setDisplayName] = useState("");
-    const [error, setError] = useState(null);
-    const [loadingOne, setLoadingOne] = useState(false);
-    const [loadingTwo, setLoadingTwo] = useState(false);
 
-     const isDesktopOrLaptop = useMediaQuery({
+// const url= 'https://pixabay.com/api/'
+const url = 'https://api.unsplash.com/' //UNSPLASH
+
+
+function HomePage({ darkModeToggle, theme }) {
+
+  // const user = useContext(UserContext);
+  // console.log(user)
+  // const { photoURL, email } = user;
+  const displayName="User";
+  const isDesktopOrLaptop = useMediaQuery({
     query: '(min-device-width: 1224px)'
   })
 
@@ -22,165 +33,212 @@ const SignUp = () => {
     query: '(max-device-width: 1224px)'
   })
 
-    const createUserWithEmailAndPasswordHandler = async (event, email, password) => {
-      event.preventDefault();
-      console.log(loadingOne)
-      try{
-        setLoadingOne(true);
-        const {user} = await auth.createUserWithEmailAndPassword(email, password);
-        generateUserDocument(user, {displayName});
-        // setLoadingOne(false);
-      }
-      catch(error){
-        // setLoadingOne(false)
-        setError('Error Signing up with email and password');
-        console.log(error);
-        setLoadingOne(false)
-      }
-  
-      setEmail("");
-      setPassword("");
-      setDisplayName("");
-    };
 
-    const onChangeHandler = event => {
-        const { name, value } = event.currentTarget;
-        if (name === "userEmail") {
-          setEmail(value);
-        } else if (name === "userPassword") {
-          setPassword(value);
-        } else if (name === "displayName") {
-          setDisplayName(value);
-        }
-      };
+  // const key = "19529048-a0442e53b19277dfa094f6e1f"
+  const key = "1lBCHcgi0-khQZwmixmCYbz6eB0YI4hC6Nhfvw6UDkI";
 
+  const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const [selectedImg, setSelectedImg] = useState(null)
+  const [error, setError] = useState(false)
+  const [images, setImages] = useState([])
+  const [term, setTerm] = useState('')
 
+  const fetchImages = () => {
+    setPage(page+1)
+    if(term === ''){
+      setLoading(true)
+      fetch(`${url}/search/photos?client_id=${key}&query=Cats&page=${page}`)
+      .then(res => res.json())
+      .then(data => {
+        console.log(data)
+        setImages(images.concat(data.results))
+        setLoading(false)
+      })
+    }
+    else{
+      setLoading(true)
+      fetch(`${url}search/photos?client_id=${key}&query=${term}&page=${page}`)
+      .then(res => res.json())
+      .then(data => {
+        console.log(data)
+        setImages(images.concat(data.results))
+        setLoading(false)
+      })
+    }
+  }
+
+  useEffect(() => {
+    setLoading(true)
+    fetch(`${url}/search/photos?client_id=${key}&query=Cats`)
+      .then(res => res.json())
+      .then(data => {
+        console.log(data)
+        // let copy = createCopy(data.results)
+        setImages(data.results)
+        setLoading(false)
+      })
+      .then(err => {
+        console.log(err)
+        //setError(true)
+        setLoading(false)
+      })
+  }, [])
+
+  const search = async() => {
+    setPage(1)
+    try{
+      setLoading(true)
+      let res = await fetch(`${url}/search/photos?client_id=${key}&query=${term}`)
+      let data = await res.json()
+      console.log(data)
+      setImages(data.results)
+      setLoading(false)
+    }
+    catch(error){
+      // setError(true)
+      console.log(error)
+      setLoading(false)
+    }
+
+  }
+
+  // const createCopy = (data) =>{
+  //   return data.map((item) => ({
+  //     ...item,
+  //     selected: false       
+  // }));
+  // }
+
+  const Image = ({image})  => {
     return(
-        <div className="SignUp">
-            <div className="container-fluid">
-          {isTabletOrMobileDevice && <><div style={{marginTop:'50px'}} className ="col-12 col-sm-6 mx-auto rounded-lg signUpForm">
-          <form className="px-4 py-4" noValidate>
-            <div style={{fontSize:'22px', fontWeight:'600', letterSpacing:'1.0'}} className="formHeading text-center">PinGram</div>
-          <div class="form-group mt-2">
-                <label style={{fontSize:'15px', fontWeight:'400'}} for="displayName">Display Name</label>
-                {error===null && <input id="custom2" type="text" placeholder="Eg: John Doe" name="displayName" class="form-control" onChange={event => onChangeHandler(event)}/>}
-                {error && <input id="displayName" type="text" placeholder="Eg: John Doe" name="displayName" class="form-control is-invalid" onChange={event => onChangeHandler(event)}/>}
-            </div>
-            <div class="form-group mt-4">
-                <label style={{fontSize:'15px', fontWeight:'400'}} for="exampleInputEmail1">Email address</label>
-                {error===null && <input id="custom2" type="email" placeholder="Eg: john.doe@gmail.com" name="userEmail" class="form-control" onChange={event => onChangeHandler(event)}/>}
-                {error && <input type="email" placeholder="Eg: john.doe@gmail.com" name="userEmail" class="form-control is-invalid" id="exampleInputEmail1" onChange={event => onChangeHandler(event)}/>}
-            </div>
-            <div class="form-group mt-4">
-                <label style={{fontSize:'15px', fontWeight:'400'}} for="exampleInputPassword1">Password</label>
-                {error===null && <input id="custom2"  type="password" class="form-control" name="userPassword" placeholder="Your Password" onChange={event => onChangeHandler(event)}/>}
-                {error && <input type="password" class="form-control is-invalid" name="userPassword" placeholder="Your Password" id="exampleInputPassword1" onChange={event => onChangeHandler(event)}/>}
-                {error && <div id="exampleInputPassword1" className="invalid-feedback">
-                    Enter all fields correctly
-                </div>}
-            </div>
-           {!loadingOne && <button id="signIn" style={{color:"#fff", backgroundColor:'#388e3c'}} type="submit" className="btn col-12 mt-2 mb-2" onClick={event => {
-              createUserWithEmailAndPasswordHandler(event, email, password);
-            }}>Sign Up</button>}
-            {loadingOne && <button type="button" className="btn col-12 mt-2 mb-2" style={{backgroundColor:'#81c784', color:"#fff"}} disabled>
-            {/* <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> */}
-              Loading...</button>}
-            <div className="text-center">
-                or
-            </div>
-
-            {!loadingTwo && <button id="signInWithGoogle" type="submit" style={{color:'#fff', backgroundColor:'#d32f2f'}} className="btn col-12 mt-2 mb-2"  onClick={() => {
-              try {
-                setLoadingTwo(true)
-                signInWithGoogle();
-                // setLoadingTwo(false)
-              } catch (error) {
-                console.error("Error signing in with Google", error);
-                setLoadingTwo(false)
-              }
-          }}>
-              Sign In with Google
-              <i class="fab fa-google px-2"></i>
-            </button>}
-
-          {loadingTwo && <button type="button" style={{backgroundColor:'#ef5350', color:'#fff'}} className="btn col-12 mt-2 mb-2" disabled>
-          {/* <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> */}
-            Loading...
-            </button>}
-
-            <p className="text-center my-2">
-                Already have an account?{" "}
-                <Link to={process.env.PUBLIC_URL} className="text-primary">
-                    Sign in here
-                </Link>{" "}
-                <br />{" "}
-            </p>
-            </form>
-        </div></>}
-
-        {isDesktopOrLaptop && <>
-          <div style={{marginTop:'50px'}} className ="col-12 col-sm-6 mx-auto shadow rounded-lg signUpForm">
-          <form className="px-4 py-4" noValidate>
-            <div style={{fontSize:'22px', fontWeight:'600', letterSpacing:'1.0'}} className="formHeading text-center">PinGram</div>
-          <div class="form-group mt-2">
-                <label style={{fontSize:'15px', fontWeight:'400'}} for="displayName">Display Name</label>
-                {error===null && <input id="custom2" type="text" placeholder="Eg: John Doe" name="displayName" class="form-control" onChange={event => onChangeHandler(event)}/>}
-                {error && <input id="displayName" type="text" placeholder="Eg: John Doe" name="displayName" class="form-control is-invalid" onChange={event => onChangeHandler(event)}/>}
-            </div>
-            <div class="form-group mt-4">
-                <label style={{fontSize:'15px', fontWeight:'400'}} for="exampleInputEmail1">Email address</label>
-                {error===null && <input id="custom2" type="email" placeholder="Eg: john.doe@gmail.com" name="userEmail" class="form-control" onChange={event => onChangeHandler(event)}/>}
-                {error && <input type="email" placeholder="Eg: john.doe@gmail.com" name="userEmail" class="form-control is-invalid" id="exampleInputEmail1" onChange={event => onChangeHandler(event)}/>}
-            </div>
-            <div class="form-group mt-4">
-                <label style={{fontSize:'15px', fontWeight:'400'}} for="exampleInputPassword1">Password</label>
-                {error===null && <input id="custom2"  type="password" class="form-control" name="userPassword" placeholder="Your Password" onChange={event => onChangeHandler(event)}/>}
-                {error && <input type="password" class="form-control is-invalid" name="userPassword" placeholder="Your Password" id="exampleInputPassword1" onChange={event => onChangeHandler(event)}/>}
-                {error && <div id="exampleInputPassword1" className="invalid-feedback">
-                    Enter all fields correctly
-                </div>}
-            </div>
-           {!loadingOne && <button id="signIn" style={{color:"#fff", backgroundColor:'#388e3c'}} type="submit" className="btn col-12 mt-2 mb-2" onClick={event => {
-              createUserWithEmailAndPasswordHandler(event, email, password);
-            }}>Sign Up</button>}
-            {loadingOne && <button type="button" className="btn col-12 mt-2 mb-2" style={{backgroundColor:'#81c784', color:"#fff"}} disabled>
-            {/* <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> */}
-              Loading...</button>}
-            <div className="text-center">
-                or
-            </div>
-
-            {!loadingTwo && <button id="signInWithGoogle" type="submit" style={{color:'#fff', backgroundColor:'#d32f2f'}} className="btn col-12 mt-2 mb-2"  onClick={() => {
-              try {
-                setLoadingTwo(true)
-                signInWithGoogle();
-                // setLoadingTwo(false)
-              } catch (error) {
-                console.error("Error signing in with Google", error);
-                setLoadingTwo(false)
-              }
-          }}>
-              Sign In with Google
-              <i class="fab fa-google px-2"></i>
-            </button>}
-
-          {loadingTwo && <button type="button" style={{backgroundColor:'#ef5350', color:'#fff'}} className="btn col-12 mt-2 mb-2" disabled>
-          {/* <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> */}
-            Loading...
-            </button>}
-
-            <p className="text-center my-2">
-                Already have an account?{" "}
-                <Link to={process.env.PUBLIC_URL} className="text-primary">
-                    Sign in here
-                </Link>{" "}
-                <br />{" "}
-            </p>
-            </form>
-        </div></>}
+      <div className="content">
+         <a href={image.links.html} target="_blank">
+           <div className="content-overlay"></div>
+           <img className="content-image" src={image.urls.regular}/>
+           <div class="content-details fadeIn-bottom">
+            {/* <h3 class="content-title">This is a title</h3> */}
+            <p class="content-text">Photo by {image.user.name} on Unsplash</p>
           </div>
-       </div>
+         </a>
+      </div>
     )
+  }
+
+  const download = async (id) => {
+    console.log('hello')
+    let url = "https://api.unsplash.com/photos/?client_id="+process.env.REACT_APP_UNSPLASH_API_KEY+"&"+id+"/download"
+    let res = await fetch(url)
+    let response = await res.json()
+    console.log(response)
+};
+
+  return (
+    <div className="app">
+      <Title userName = {displayName} auth={auth} darkModeToggle = {darkModeToggle} theme={theme}/>
+      <Search props={{
+        term: term,
+        search: search,
+        setTerm: setTerm
+      }}/>
+      {error && <div className="error">Error trying to load images</div>}
+      {/* {images && <GridImages photos={images} setSelectedImg = {setSelectedImg}/>} */}
+      
+        <InfiniteScroll
+        dataLength = {images.length}
+        next = {fetchImages}
+        hasMore = {true}
+        loader = {
+          <div></div>
+        }
+        >
+          <div className="container-fluid mt-4" style={{overflow:'auto'}}>
+        
+       { isDesktopOrLaptop && <> <div className="card-columns">
+          {images.map((image, index) => (
+            <a href={image.links.html} target="_blank">
+              <figure class="figure">
+              {/* <img src={image.urls.regular} class="figure-img img-fluid rounded" alt="..."/> */}
+              <Image image={image}/>
+              {image.tags && <figcaption class="figure-caption d-flex flex-row justify-content-center flex-wrap mt-1">
+                {image.tags.map((tag) => (
+                  <span className='tag px-3 py-1 mr-2 rounded-pill'>#{tag.title}</span>
+                ))}
+              </figcaption>}
+            </figure>
+            </a>
+          ))}
+          </div> </>}
+
+          {isTabletOrMobileDevice && <><div className="card-columns">
+          {images.map((image, index) => (
+            <a href={image.links.html} target="_blank">
+              {theme === "light" && <><div className="card cardTheme">
+              <img src={image.urls.small} className="card-img-top" onClick={() => setSelectedImg(image.urls.regular)}/>
+                        <div class="card-body">
+                            <div className="action">
+                            {/* <IconButton style={{color:'#f50057', fontSize:'18px'}} onClick={() => {}}>
+                                <FavoriteIcon/>
+                            </IconButton> */}
+                             {/* <IconButton size="medium" style={{color:'#444', fontSize:'18px', border:'0.7px solid #444'}} onClick={() => {}}>
+                                  <FavoriteBorderIcon/>
+                              </IconButton> */}
+                                        {/* <a href={image.links.download+ "?force=true"} className="btn btn-sm btn-light border-0 rounded-lg" onClick={() => download(image.id)}>
+                                            <i className="fas fa-arrow-down custom-icon" style={{color:"#689f38"}}></i> 
+                                        </a> */}
+                            {/* <Button size="small" style={{color:'#444', fontWeight:'600', border:'0.7px solid #444'}}>
+                                DOWNLOAD
+                            </Button> */}
+                          
+                                </div>
+                                <div className="photo-header mt-1 mb-1">Photo by <a href={image.user.links.html}>{image.user.name}</a> on <a href="https://unsplash.com/">Unsplash</a></div>
+                                {/* {item.description && <p class="card-text">{item.description}</p>} */}
+                                <div className="tags mt-2" style={{display:'flex', flexWrap:'wrap'}}>
+                                    {image.tags.map((tag) => (
+                                        <span className='tag px-3 py-1 mr-2 rounded-pill'>#{tag.title}</span>
+                                    ))}
+                                </div>
+                        </div>
+              </div></>}
+              
+              {theme === "dark" && <><div className="card rounded cardTheme">
+              <img src={image.urls.small} className="card-img-top" onClick={() => setSelectedImg(image.urls.regular)}/>
+                        <div class="card-body">
+                            <div className="action">
+                                    
+                              {/* <IconButton style={{color:'#f50057', fontSize:'18px'}} onClick={() => {}}>
+                                  <FavoriteIcon/>
+                              </IconButton> */}
+
+                              {/* <IconButton size="medium" style={{color:'#fff', fontSize:'18px', border:'0.7px solid #fff'}} onClick={() => {}}>
+                                  <FavoriteBorderIcon/>
+                              </IconButton> */}
+                                        {/* <a href={image.links.download+ "?force=true"} className="btn btn-sm btn-light border-0 rounded-lg" onClick={() => download(image.id)}>
+                                            <i className="fas fa-arrow-down custom-icon" style={{color:"#689f38"}}></i> 
+                                        </a> */}
+                              {/* <Button size="small" style={{color:'#fff', fontWeight:'600', border:'0.7px solid #fff'}}>
+                                DOWNLOAD
+                              </Button> */}
+                                </div>
+                                <div className="photo-header mt-1 mb-1">Photo by <a href={image.user.links.html}>{image.user.name}</a> on <a href="https://unsplash.com/">Unsplash</a></div>
+                                {/* {item.description && <p class="card-text">{item.description}</p>} */}
+                                <div className="tags mt-2" style={{display:'flex', flexWrap:'wrap'}}>
+                                    {image.tags.map((tag) => (
+                                        <span className='tag px-3 py-1 mr-2 rounded-pill'>#{tag.title}</span>
+                                    ))}
+                                </div>
+                        </div>
+              </div></>}
+              
+            </a>
+          ))}
+          </div></>}
+        
+      </div>
+      </InfiniteScroll>
+      {selectedImg && <Modal selectedImg = {selectedImg} setSelectedImg = {setSelectedImg}/>}
+    </div>
+  );
 }
 
-export default SignUp
+export default HomePage;

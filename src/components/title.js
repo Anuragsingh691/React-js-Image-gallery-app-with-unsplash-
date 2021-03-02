@@ -45,7 +45,7 @@ export default function Title({ userName, auth, darkModeToggle, theme }){
         <div className="title">
           <div className="navbar">
             <div className="container-fluid">
-                    <h1>PinGram</h1>
+                    <h1>Unsplash-Gallery</h1>
                     <div style={{marginTop:'-5px'}} className="header-icons">
                         {/* <div className="icon"><i class="fab fa-github"></i></div>
                         <div className="icon"><i class="fab fa-twitter"></i></div>
@@ -56,7 +56,7 @@ export default function Title({ userName, auth, darkModeToggle, theme }){
                                 <span class="slider round"></span>
                             </label> */}
                             <div style={{position: 'relative', display: 'inline-block', marginTop:'-5px'}}>
-                               <IconButton style={{border:"none", outline:"none"}} onClick={() => changeTheme()}>
+                               <IconButton style={{border:"none", outline:"none"}}>
                                 {theme==="dark" && <Brightness6TwoToneIcon fontSize="large" style={{color: "#fff"}}/>}
                                 {theme==="light" && <Brightness2TwoToneIcon fontSize="large" style={{color: "#f48fb1"}}/>}
                                </IconButton>
@@ -67,10 +67,6 @@ export default function Title({ userName, auth, darkModeToggle, theme }){
                             {theme==="light" && <Avatar className={classes.pink} alt={userName}>{userName[0].toUpperCase()}</Avatar>}
                             {theme==="dark" && <Avatar className={classes.purple} alt={userName}>{userName[0].toUpperCase()}</Avatar>}
                             </a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                                {/* <a class="dropdown-item" href="#">Your Collection</a> */}
-                                <a class="dropdown-item" href="#" onClick={() => {auth.signOut()}}>Sign Out</a>
-                            </div>
                            </div>
                     </div>
                 </div>

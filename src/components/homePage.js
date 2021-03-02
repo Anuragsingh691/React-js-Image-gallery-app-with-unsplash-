@@ -21,10 +21,10 @@ const url = 'https://api.unsplash.com/' //UNSPLASH
 
 function HomePage({ darkModeToggle, theme }) {
 
-  const user = useContext(UserContext);
+  // const user = useContext(UserContext);
   // console.log(user)
-  const { photoURL, displayName, email } = user;
-
+  // const { photoURL, email } = user;
+  const displayName="User";
   const isDesktopOrLaptop = useMediaQuery({
     query: '(min-device-width: 1224px)'
   })
