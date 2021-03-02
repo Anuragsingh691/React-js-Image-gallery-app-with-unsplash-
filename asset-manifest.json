@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/React-js-Image-gallery-app-with-unsplash-/static/css/main.59511a44.chunk.css",
-    "main.js": "/React-js-Image-gallery-app-with-unsplash-/static/js/main.f0bca138.chunk.js",
-    "main.js.map": "/React-js-Image-gallery-app-with-unsplash-/static/js/main.f0bca138.chunk.js.map",
+    "main.css": "/React-js-Image-gallery-app-with-unsplash-/static/css/main.d9d99376.chunk.css",
+    "main.js": "/React-js-Image-gallery-app-with-unsplash-/static/js/main.220d8732.chunk.js",
+    "main.js.map": "/React-js-Image-gallery-app-with-unsplash-/static/js/main.220d8732.chunk.js.map",
     "runtime-main.js": "/React-js-Image-gallery-app-with-unsplash-/static/js/runtime-main.2daf06e1.js",
     "runtime-main.js.map": "/React-js-Image-gallery-app-with-unsplash-/static/js/runtime-main.2daf06e1.js.map",
-    "static/js/2.1e745147.chunk.js": "/React-js-Image-gallery-app-with-unsplash-/static/js/2.1e745147.chunk.js",
-    "static/js/2.1e745147.chunk.js.map": "/React-js-Image-gallery-app-with-unsplash-/static/js/2.1e745147.chunk.js.map",
+    "static/js/2.9af6fb3c.chunk.js": "/React-js-Image-gallery-app-with-unsplash-/static/js/2.9af6fb3c.chunk.js",
+    "static/js/2.9af6fb3c.chunk.js.map": "/React-js-Image-gallery-app-with-unsplash-/static/js/2.9af6fb3c.chunk.js.map",
     "index.html": "/React-js-Image-gallery-app-with-unsplash-/index.html",
-    "precache-manifest.1ab0c111cedc0f7ca66a9914ea6ca548.js": "/React-js-Image-gallery-app-with-unsplash-/precache-manifest.1ab0c111cedc0f7ca66a9914ea6ca548.js",
+    "precache-manifest.00ea2b6338ae8c30196f5bd2a0ba63d4.js": "/React-js-Image-gallery-app-with-unsplash-/precache-manifest.00ea2b6338ae8c30196f5bd2a0ba63d4.js",
     "service-worker.js": "/React-js-Image-gallery-app-with-unsplash-/service-worker.js",
-    "static/css/main.59511a44.chunk.css.map": "/React-js-Image-gallery-app-with-unsplash-/static/css/main.59511a44.chunk.css.map",
-    "static/js/2.1e745147.chunk.js.LICENSE.txt": "/React-js-Image-gallery-app-with-unsplash-/static/js/2.1e745147.chunk.js.LICENSE.txt"
+    "static/css/main.d9d99376.chunk.css.map": "/React-js-Image-gallery-app-with-unsplash-/static/css/main.d9d99376.chunk.css.map",
+    "static/js/2.9af6fb3c.chunk.js.LICENSE.txt": "/React-js-Image-gallery-app-with-unsplash-/static/js/2.9af6fb3c.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.2daf06e1.js",
-    "static/js/2.1e745147.chunk.js",
-    "static/css/main.59511a44.chunk.css",
-    "static/js/main.f0bca138.chunk.js"
+    "static/js/2.9af6fb3c.chunk.js",
+    "static/css/main.d9d99376.chunk.css",
+    "static/js/main.220d8732.chunk.js"
   ]
 }
